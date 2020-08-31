@@ -6,13 +6,16 @@
                     GeoNinjas!
                 </router-link>
                 <ul class="right">
-                    <li>
+                    <li v-if="!user">
                         <router-link :to="{name: 'Signup'}">Signup</router-link>
                     </li>
-                    <li>
+                    <li v-if="!user">
                         <router-link :to="{name: 'Login'}">Login</router-link>
                     </li>
-                    <li><a href="" @click="logout">Logout</a></li>
+                    <li v-if="user">
+                        <a>{{ user.email }}</a>
+                    </li>
+                    <li v-if="user"><a @click="logout">Logout</a></li>
                 </ul>
             </div>
         </nav>
@@ -24,7 +27,7 @@ import firebase from 'firebase';
 export default {
     name: 'Navbar',
     data() {
-        return {};
+        return {user: null};
     },
     methods: {
         logout() {
@@ -35,6 +38,16 @@ export default {
                     this.$router.push({name: 'Login'});
                 });
         },
+    },
+    created() {
+        // let user = firebase.auth().currentUser;
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                this.user = user;
+            } else {
+                this.user = null;
+            }
+        });
     },
 };
 </script>
